@@ -3,13 +3,19 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from idioticon.conf import settings
 
-try:
-    # Deprecated in Django 1.7
-    from django.utils.module_loading import import_by_path as import_string
+##try:
+##    # Deprecated in Django 1.7
+##    from django.utils.module_loading import import_by_path as import_string
+##
+##except ImportError:
+##    # For Django 1.7
+##    from django.utils.module_loading import import_string
+##
 
-except ImportError:
-    # For Django 1.7
+try:
     from django.utils.module_loading import import_string
+except ImportError:
+    from idioticon.compatibility import import_string
 
 # Definition Field type
 TermDefinitionField = import_string(settings.IDIOTICON_TEXT_FIELD) if settings.IDIOTICON_TEXT_FIELD else models.TextField
@@ -31,7 +37,13 @@ class TermManager(models.Manager):
 
         try:
             # use select_related to load main term and requested alias with one query.
-            term = self.get_queryset().select_related('main_term').get(key=key)
+            try:
+                qs = self.get_queryset()
+            except AttributeError:
+                # in Django 1.5 the method Manager.get_queryset() was named Manager.get_query_set()
+                qs = self.get_query_set()
+
+            term = qs.select_related('main_term').get(key=key)
 
         except Term.DoesNotExist:
             if not soft_error:
