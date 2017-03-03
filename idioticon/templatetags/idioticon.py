@@ -33,7 +33,7 @@ def do_term_tag(term_key, **kwargs):
         template = get_template(template_name)
         return template.render(context)
     except:
-        if settings.TEMPLATE_DEBUG:
+        if settings.DEBUG:
             raise
         return ''
 
