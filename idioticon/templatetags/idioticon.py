@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 from django import template
 from django.conf import settings
-from django.template import (Node, TemplateSyntaxError, Context)
+from django.template import (Node, TemplateSyntaxError ) #, Context)
 from django.template.loader import get_template
 from idioticon import shortcuts
 
@@ -24,7 +24,8 @@ def do_term_tag(term_key, **kwargs):
 
     theme = kwargs.pop('theme', settings.IDIOTICON_THEME)
 
-    context = Context()
+#    context = Context()
+    context = {}
     context.update(kwargs)
 
     try:
